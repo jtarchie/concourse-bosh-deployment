@@ -1,4 +1,3 @@
 - type: replace
-  path: /instance_groups/name=db/jobs/name=postgres/provides?
-  value:
-    postgres: {as: db}
+  path: /instance_groups/name=db/jobs/name=postgres/provides?/postgres?
+  value: {as: db}
