@@ -58,7 +58,8 @@
           database: &credhub_db credhub
           username: &credhub_db_role credhub
           password: &credhub_db_passwd ((credhub_db_password))
-          require_tls: false
+          tls_ca: ((postgres_ca.certificate))
+          require_tls: true
         log_level: info
         encryption:
           providers:
@@ -77,7 +78,7 @@
     name: *credhub_db
 - path: /instance_groups/name=db/jobs/name=postgres/properties/databases/roles/-
   type: replace
-  value: 
+  value:
     name: *credhub_db
     password: *credhub_db_passwd
 
