@@ -32,7 +32,6 @@
         zones: {internal: {hostnames: []}}
         sslCertificate: ((atc_tls.certificate))
         sslPrivateKey: ((atc_tls.private_key))
-        ca_certs: [((postgres_ca.certificate))]
         jwt:
           revocable: true
           policy:
@@ -43,7 +42,6 @@
       uaadb:
         port: 5432
         db_scheme: postgresql
-        tls: enabled
         databases:
         - tag: uaa
           name: &uaa_db uaa
