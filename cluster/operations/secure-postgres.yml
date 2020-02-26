@@ -1,0 +1,79 @@
+- type: replace
+  path: /variables/-
+  value:
+    name: postgres_ca
+    type: certificate
+    options:
+      is_ca: true
+      common_name: postgresCA
+
+- type: replace
+  path: /variables/-
+  value:
+    name: postgres_tls
+    type: certificate
+    options:
+      ca: postgres_ca
+      extended_key_usage:
+      - server_auth
+    consumes:
+      alternative_name: { from: concourse-postgres-address }
+      common_name: { from: concourse-postgres-address }
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=web/properties/postgresql/ca_cert?
+  value: ((postgres_ca))
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=web/properties/postgresql/sslmode?
+  value: verify-ca
+
+- type: replace
+  path: /instance_groups/name=db/jobs/name=postgres/provides?/postgres-address
+  value: {as: concourse-postgres-address}
+
+- type: replace
+  path: /instance_groups/name=db/jobs/name=postgres/custom_provider_definitions?/-
+  value: {name: postgres-address, type: address}
+
+- type: replace
+  path: /instance_groups/name=db/jobs/name=postgres/properties/databases?/tls
+  value:
+    private_key: ((postgres_tls.private_key))
+    certificate: ((postgres_tls.certificate))
+
+# Credhub
+- type: replace
+  path: /instance_groups/name=web/jobs/name=credhub/properties/credhub/data_storage/tls_ca?
+  value: ((postgres_ca.certificate))
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=credhub/properties/credhub/data_storage/require_tls?
+  value: true
+
+# UAA
+- type: replace
+  path: /instance_groups/name=web/jobs/name=uaa/properties/uaa/ca_certs?
+  value: [((postgres_ca.certificate))]
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=uaa/properties/uaadb/tls?
+  value: enabled
+
+# BBR
+- type: replace
+  path: /variables/-
+  value:
+    name: postgres_client_tls
+    type: certificate
+    options:
+      ca: postgres_ca
+      common_name: concourse
+      extended_key_usage:
+      - client_auth
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/client_cert
+  value:
+    private_key: ((postgres_client_tls.private_key))
+    certificate: ((postgres_client_tls.certificate))
