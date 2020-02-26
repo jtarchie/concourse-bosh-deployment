@@ -1,0 +1,7 @@
+- type: replace
+  path: /instance_groups/name=web/jobs/name=uaa?/properties/uaa/ca_certs?
+  value: [((postgres_ca.certificate))]
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=uaa?/properties/uaadb/tls?
+  value: enabled
