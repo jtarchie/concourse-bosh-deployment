@@ -35,9 +35,6 @@ instance_groups:
 
       postgresql:
         ca_cert: ((postgres_ca))
-        client_cert:
-          certificate: ""
-          private_key: ""
         sslmode: verify-ca
         database: &db_name atc
         role: &db_role
